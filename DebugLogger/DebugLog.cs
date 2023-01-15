@@ -35,22 +35,31 @@ public static class DebugLog
 
     private static void CreateLogFile()
     {
-        if (!CheckIfLogFileAlreadyExisting())
+        try
         {
-            using FileStream file = File.Create(finalLogFileName);
+            if (!CheckIfLogFileAlreadyExisting())
+            {
+                using FileStream file = File.Create(finalLogFileName);
             
-            file.Flush();
-            file.Close();
+                file.Flush();
+                file.Close();
+            }
+            else if (System.Diagnostics.Debugger.IsAttached)
+            {
+                File.Delete(finalLogFileName);
+            
+                using FileStream file = File.Create(finalLogFileName);
+            
+                file.Flush();
+                file.Close();
+            }
         }
-        else if (System.Diagnostics.Debugger.IsAttached)
+        catch(Exception e)
         {
-            File.Delete(finalLogFileName);
-            
-            using FileStream file = File.Create(finalLogFileName);
-            
-            file.Flush();
-            file.Close();
+            IssueWithLogger(e);
         }
+        
+
     }
     
     private static void CreateLogFile(string fileLocation)
@@ -59,43 +68,65 @@ public static class DebugLog
         DateTime dateTime = DateTime.Today;
         finalLogFileName = finalLogFileName + fileName + dateTime.Date.Day + "_" + dateTime.Date.Month + "_" +
                            dateTime.Date.Year;
-                           
-        if (!File.Exists(finalLogFileName))
+        try
         {
-            using FileStream file = File.Create(finalLogFileName);
-            
-            file.Flush();
-            file.Close();
+            if (!File.Exists(finalLogFileName))
+            {
+                using FileStream file = File.Create(finalLogFileName);
+
+                file.Flush();
+                file.Close();
+            }
+            else if (System.Diagnostics.Debugger.IsAttached)
+            {
+                File.Delete(finalLogFileName);
+
+                using FileStream file = File.Create(finalLogFileName);
+
+                file.Flush();
+                file.Close();
+            }
         }
-        else if (System.Diagnostics.Debugger.IsAttached)
+        catch (Exception e)
         {
-            File.Delete(finalLogFileName);
-            
-            using FileStream file = File.Create(finalLogFileName);
-            
-            file.Flush();
-            file.Close();
+            IssueWithLogger(e);
         }
+
     }
-    
+
+    private static void IssueWithLogger(Exception e)
+    {
+        Console.WriteLine("Debug Log Failed to create a file in the following path directory: " + finalLogFileName);
+        Console.WriteLine("The OS is: " + RuntimeInformation.OSDescription);
+        Console.WriteLine("Exception that was thrown");
+        Console.WriteLine(e.Message);
+    }
+
     private static void CreateLogFile(string fileLocation, string fileName)
     {
         finalLogFileName = fileLocation.Trim() + fileName.Trim();
-        if (!File.Exists(finalLogFileName))
+        try
         {
-            using FileStream file = File.Create(finalLogFileName);
+            if (!File.Exists(finalLogFileName))
+            {
+                using FileStream file = File.Create(finalLogFileName);
             
-            file.Flush();
-            file.Close();
+                file.Flush();
+                file.Close();
+            }
+            else if (System.Diagnostics.Debugger.IsAttached)
+            {
+                File.Delete(finalLogFileName);
+            
+                using FileStream file = File.Create(finalLogFileName);
+            
+                file.Flush();
+                file.Close();
+            }
         }
-        else if (System.Diagnostics.Debugger.IsAttached)
+        catch (Exception e)
         {
-            File.Delete(finalLogFileName);
-            
-            using FileStream file = File.Create(finalLogFileName);
-            
-            file.Flush();
-            file.Close();
+            IssueWithLogger(e);
         }
     }
     
@@ -119,7 +150,7 @@ public static class DebugLog
         }
         catch
         {
-            return false;        
+            return false;
         }
     }
 
